@@ -14,7 +14,7 @@ type mapListRes struct {
 	}
 }
 
-func (p *Pokedex) mapListNext() {
+func (p *Pokedex) mapListNext(...string) {
 	if p.nextMapURL == "" {
 		fmt.Println("No more locations to get")
 		return
@@ -37,7 +37,7 @@ func (p *Pokedex) mapListNext() {
 	}
 }
 
-func (p *Pokedex) mapListPrev() {
+func (p *Pokedex) mapListPrev(...string) {
 	if p.prevMapURL == "" {
 		fmt.Println("Please advance map further before going back")
 		return

@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/CalebQ42/Pokedex/internal/cache"
 )
 
 type cmd struct {
-	fn   func()
+	fn   func(args ...string)
 	desc string
 }
 
@@ -28,7 +29,7 @@ func NewPokedex(quit *bool) *Pokedex {
 	p.commands = map[string]cmd{
 		"quit": {
 			desc: "Close the Pokedex",
-			fn: func() {
+			fn: func(...string) {
 				*quit = true
 			},
 		},
@@ -44,20 +45,24 @@ func NewPokedex(quit *bool) *Pokedex {
 			desc: "List the previous 20 map locations",
 			fn:   p.mapListPrev,
 		},
+		"explore": {
+			desc: "Explore a map area (lists the Pokemon found in the area)",
+		},
 	}
 	return p
 }
 
 func (p *Pokedex) Handle(command string) {
-	c, ok := p.commands[command]
+	spl := strings.Split(command, " ")
+	c, ok := p.commands[spl[0]]
 	if !ok {
 		fmt.Println("Invalid Command")
 		return
 	}
-	c.fn()
+	c.fn(spl[1:]...)
 }
 
-func (p *Pokedex) help() {
+func (p *Pokedex) help(...string) {
 	fmt.Println("\nUsage:")
 	fmt.Println()
 	for i := range p.commands {
