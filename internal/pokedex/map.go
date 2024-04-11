@@ -59,3 +59,39 @@ func (p *Pokedex) mapListPrev(...string) {
 		fmt.Println(l.Name)
 	}
 }
+
+type locationRes struct {
+	Encounters []struct {
+		Pokemon struct {
+			Name string
+		}
+	} `json:"pokemon_encounters"`
+}
+
+func (p *Pokedex) explore(args ...string) {
+	if len(args) == 0 {
+		fmt.Println("Please provide a location name")
+		return
+	}
+	url := "https://pokeapi.co/api/v2/location-area/" + args[0]
+	dat, err := p.getURLData(url)
+	if err != nil {
+		fmt.Println("Error while getting location data:", err)
+		return
+	}
+	if string(dat) == "Not Found" {
+		fmt.Println(args[0], "not a valid location")
+		return
+	}
+	var res locationRes
+	err = json.Unmarshal(dat, &res)
+	if err != nil {
+		fmt.Println("Error while marshalling json:", err)
+		return
+	}
+	fmt.Printf("Exploring %v...\n", args[0])
+	fmt.Println("Found Pokemon:")
+	for _, p := range res.Encounters {
+		fmt.Printf(" - %v\n", p.Pokemon.Name)
+	}
+}
